@@ -1,5 +1,5 @@
 {
-  "name": "qm-tracker",
+  "name": "whatdid",
   "version": "1.0.0",
   "description": "Claude Code qualitative work tracker — know what you did, not just how many tokens you used",
   "type": "module",
@@ -7,7 +7,7 @@
   "author": "",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Hskim-droid/qm-tracker"
+    "url": "https://github.com/Hskim-droid/whatdid"
   },
   "keywords": [
     "claude",
@@ -22,8 +22,8 @@
     "node": ">=20"
   },
   "bin": {
-    "qm-tracker": "./dist/cli.js",
-    "qm-tracker-mcp": "./dist/mcp.js"
+    "whatdid": "./dist/cli.js",
+    "whatdid-mcp": "./dist/mcp.js"
   },
   "scripts": {
     "build": "tsup",

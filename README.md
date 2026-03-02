@@ -1,14 +1,14 @@
-# qm-tracker
+# whatdid
 
 **Qualitative work tracker for Claude Code** — know *what* you did, not just how many tokens you used.
 
-qm-tracker parses the session JSONL files that Claude Code stores in `~/.claude/projects/`, indexes them into a local SQLite database, and exposes both a CLI and an MCP server for querying your work history.
+whatdid parses the session JSONL files that Claude Code stores in `~/.claude/projects/`, indexes them into a local SQLite database, and exposes both a CLI and an MCP server for querying your work history.
 
 ## How it differs from token counters
 
 Tools like [ccusage](https://github.com/ryoppippi/ccusage) answer **"how much did I use?"** (tokens, costs, models).
 
-qm-tracker answers **"what did I do?"**:
+whatdid answers **"what did I do?"**:
 
 - Session summaries auto-generated from your prompts
 - Keyword search across all past sessions
@@ -20,8 +20,8 @@ It also pre-indexes everything in SQLite, so repeated queries are instant — no
 ## Install
 
 ```bash
-git clone https://github.com/Hskim-droid/qm-tracker.git
-cd qm-tracker
+git clone https://github.com/Hskim-droid/whatdid.git
+cd whatdid
 npm install
 npm run build
 ```
@@ -30,37 +30,37 @@ Requires Node.js >= 20 and a C++ toolchain for [better-sqlite3](https://github.c
 
 ## CLI Usage
 
-Data syncs automatically on every command. Use `qm-tracker sync` to sync manually.
+Data syncs automatically on every command. Use `whatdid sync` to sync manually.
 
 ```bash
 # Today's overview (default command)
-qm-tracker
+whatdid
 
 # Session list with filters
-qm-tracker sessions
-qm-tracker sessions --project my-project --since 2025-01-01
+whatdid sessions
+whatdid sessions --project my-project --since 2025-01-01
 
 # Single session detail
-qm-tracker session <session-id>
+whatdid session <session-id>
 
 # Project list
-qm-tracker projects
+whatdid projects
 
 # Reports (daily / weekly / project / models)
-qm-tracker report daily --date 2025-03-15
-qm-tracker report weekly --format csv
-qm-tracker report project my-project --format html --output report.html
-qm-tracker report models
+whatdid report daily --date 2025-03-15
+whatdid report weekly --format csv
+whatdid report project my-project --format html --output report.html
+whatdid report models
 
 # Force full re-sync
-qm-tracker sync --force
+whatdid sync --force
 ```
 
 Output formats: `table` (default), `csv`, `json`, `html`.
 
 ## MCP Server
 
-qm-tracker ships an MCP server that lets Claude Code query your work history in conversation.
+whatdid ships an MCP server that lets Claude Code query your work history in conversation.
 
 ### Setup
 
@@ -69,9 +69,9 @@ Add to `~/.claude/.mcp.json`:
 ```json
 {
   "mcpServers": {
-    "qm-tracker": {
+    "whatdid": {
       "command": "node",
-      "args": ["/absolute/path/to/qm-tracker/dist/mcp.js"]
+      "args": ["/absolute/path/to/whatdid/dist/mcp.js"]
     }
   }
 }
@@ -102,7 +102,7 @@ After setup, you can ask Claude Code things like:
 - "What did I work on yesterday?"
 - "Find all sessions related to ChatService"
 - "Give me a morning briefing"
-- "Show me recent activity on the qm-tracker project"
+- "Show me recent activity on the whatdid project"
 
 ## How it works
 

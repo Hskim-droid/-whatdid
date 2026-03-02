@@ -10,7 +10,7 @@ export async function showOverview(): Promise<void> {
   const models = queryModelsReport();
   const date = todayDate();
 
-  console.log(`\nqm-tracker — Claude Code Usage Overview`);
+  console.log(`\nwhatdid — Claude Code Usage Overview`);
   console.log(`${"=".repeat(42)}`);
 
   // Today's usage

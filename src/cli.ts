@@ -42,7 +42,7 @@ async function main(): Promise<void> {
     case "session": {
       const id = args[1];
       if (!id) {
-        throw new Error("Usage: qm-tracker session <session-id>");
+        throw new Error("Usage: whatdid session <session-id>");
       }
       await showSession(id);
       break;
@@ -66,7 +66,7 @@ async function main(): Promise<void> {
         case "project": {
           const name = args[2];
           if (!name) {
-            throw new Error("Usage: qm-tracker report project <name> [--format csv|json|html]");
+            throw new Error("Usage: whatdid report project <name> [--format csv|json|html]");
           }
           await projectReport(name, fmt, out);
           break;
@@ -75,7 +75,7 @@ async function main(): Promise<void> {
           await modelsReport(fmt, out);
           break;
         default:
-          throw new Error("Usage: qm-tracker report <daily|weekly|project|models> [options]");
+          throw new Error("Usage: whatdid report <daily|weekly|project|models> [options]");
       }
       break;
     }
@@ -85,7 +85,7 @@ async function main(): Promise<void> {
       break;
 
     default:
-      console.log(`qm-tracker — Claude Code usage tracker
+      console.log(`whatdid — Claude Code usage tracker
 
 Commands:
   (no args)                              Overview: today's usage, projects, models

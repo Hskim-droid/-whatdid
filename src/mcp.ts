@@ -3,7 +3,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { registerTools, registerPrompts } from "./mcp-tools.js";
 
 const server = new McpServer({
-  name: "qm-tracker",
+  name: "whatdid",
   version: "1.0.0",
 });
 
