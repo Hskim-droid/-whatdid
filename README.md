@@ -20,7 +20,7 @@ It also pre-indexes everything in SQLite, so repeated queries are instant — no
 ## Install
 
 ```bash
-git clone https://github.com/Hskim-droid/-whatdid.git
+git clone https://github.com/Hskim-droid/-whatdid.git whatdid
 cd whatdid
 npm install
 npm run build
