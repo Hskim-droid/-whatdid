@@ -11,6 +11,14 @@ import {
 import { duration } from "./util.js";
 import { ensureSynced } from "./sync.js";
 
+/** Validate a YYYY-MM-DD date string. Returns null if valid, error message if not. */
+function validateDate(s: string): string | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return `Invalid date format "${s}". Expected YYYY-MM-DD.`;
+  const d = new Date(s + "T00:00:00Z");
+  if (isNaN(d.getTime())) return `Invalid date "${s}".`;
+  return null;
+}
+
 /** Register all MCP tools and prompts on the server. */
 export function registerTools(server: McpServer): void {
   // ── Tool 1: get_work_summary ──
@@ -22,6 +30,8 @@ export function registerTools(server: McpServer): void {
       try {
         await ensureSynced();
         const targetDate = date || new Date().toISOString().slice(0, 10);
+        const dateErr = validateDate(targetDate);
+        if (dateErr) return { content: [{ type: "text" as const, text: dateErr }], isError: true };
         const sessions = querySessionsForDate(targetDate);
 
         if (sessions.length === 0) {
@@ -193,6 +203,10 @@ export function registerTools(server: McpServer): void {
     async ({ query, project, since, limit }) => {
       try {
         await ensureSynced();
+        if (since) {
+          const dateErr = validateDate(since);
+          if (dateErr) return { content: [{ type: "text" as const, text: dateErr }], isError: true };
+        }
         const sessions = searchSessions(query, project, since, limit || 20);
 
         const totalInput = sessions.reduce((sum, s) => sum + s.total_input, 0);

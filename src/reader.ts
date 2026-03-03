@@ -127,7 +127,7 @@ export interface JsonlMeta {
 const NOISE_PATTERNS = /^(이전\s*작업|이전작업|컴퓨터가 작업하다|●|빌드\s*확인)/;
 
 export async function extractSessionMeta(filePath: string): Promise<JsonlMeta> {
-  if (!fs.existsSync(filePath)) return { firstPrompt: null, gitBranch: null, messageCount: 0 };
+  if (!fs.existsSync(filePath)) return { firstPrompt: null, bestPrompt: null, gitBranch: null, messageCount: 0 };
 
   let firstPrompt: string | null = null;
   let bestPrompt: string | null = null;
