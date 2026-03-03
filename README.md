@@ -13,8 +13,8 @@ Tools like [ccusage](https://github.com/ryoppippi/ccusage) answer **"how much di
 whatdid answers **"what did I do?"**:
 
 - Session summaries auto-generated from your prompts
-- Keyword search across all past sessions
 - Project/branch-aware activity patterns
+
 It also pre-indexes everything in SQLite, so repeated queries are instant — no re-parsing JSONL files on every call.
 
 ## Install
