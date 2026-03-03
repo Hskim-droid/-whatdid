@@ -4,7 +4,7 @@
   "description": "Claude Code qualitative work tracker — know what you did, not just how many tokens you used",
   "type": "module",
   "license": "MIT",
-  "author": "",
+  "author": "Hskim-droid",
   "repository": {
     "type": "git",
     "url": "https://github.com/Hskim-droid/-whatdid"
