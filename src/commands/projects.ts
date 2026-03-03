@@ -1,6 +1,6 @@
 import { ensureSynced } from "../sync.js";
-import { queryAllProjectsReport, getAllProjects } from "../db.js";
-import { formatTokens, formatTokensCompact } from "../util.js";
+import { queryAllProjectsReport } from "../db.js";
+import { formatTokensCompact } from "../util.js";
 
 export async function listProjects(): Promise<void> {
   await ensureSynced();

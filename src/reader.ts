@@ -30,7 +30,7 @@ export function discoverProjects(): DiscoveredProject[] {
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
     const dirPath = path.join(projectsDir, entry.name);
-    // Decode the encoded path: C--Users-User-Desktop → C:\Users\User\Desktop
+    // originalPath is resolved later from session JSONL cwd fields
     projects.push({
       encodedName: entry.name,
       dirPath,
@@ -45,9 +45,12 @@ export function discoverProjects(): DiscoveredProject[] {
 export function extractCwdFromJSONL(filePath: string): string | null {
   if (!fs.existsSync(filePath)) return null;
   try {
-    const buf = fs.readFileSync(filePath, { encoding: "utf-8", flag: "r" });
-    // Read only the first few lines to find cwd
-    const lines = buf.split("\n", 20);
+    // Read a small chunk instead of the entire file
+    const fd = fs.openSync(filePath, "r");
+    const buf = Buffer.alloc(8192);
+    const bytesRead = fs.readSync(fd, buf, 0, 8192, 0);
+    fs.closeSync(fd);
+    const lines = buf.toString("utf-8", 0, bytesRead).split("\n", 20);
     for (const line of lines) {
       if (!line.trim()) continue;
       try {

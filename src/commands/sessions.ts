@@ -1,6 +1,6 @@
 import { ensureSynced } from "../sync.js";
 import { querySessions, findProjectId } from "../db.js";
-import { fmtTime, duration, formatTokensCompact, nowISO } from "../util.js";
+import { fmtTime, duration, formatTokensCompact } from "../util.js";
 
 export async function listSessions(
   projectFilter?: string,

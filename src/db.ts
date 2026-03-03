@@ -4,7 +4,6 @@ import type {
   DbProject,
   DbSession,
   DbApiCall,
-  DbSessionTotals,
   DbSyncState,
   ApiCall,
   ReportRow,
@@ -556,6 +555,11 @@ export function queryActivitySummary(since: string) {
   return { dailyActivity, activeProjects, activeBranches, recentSessions };
 }
 
+/** Escape SQL LIKE metacharacters so they match literally. */
+function escapeLike(s: string): string {
+  return s.replace(/[%_\\]/g, "\\$&");
+}
+
 /** Search sessions by keyword in summary/first_prompt, with optional project and date filters. */
 export function searchSessions(
   query?: string,
@@ -568,12 +572,14 @@ export function searchSessions(
   const params: unknown[] = [];
 
   if (query) {
-    conditions.push(`(s.summary LIKE ? OR s.first_prompt LIKE ?)`);
-    params.push(`%${query}%`, `%${query}%`);
+    const q = `%${escapeLike(query)}%`;
+    conditions.push(`(s.summary LIKE ? ESCAPE '\\' OR s.first_prompt LIKE ? ESCAPE '\\')`);
+    params.push(q, q);
   }
   if (project) {
-    conditions.push(`(p.original_path LIKE ? OR p.encoded_name LIKE ?)`);
-    params.push(`%${project}%`, `%${project}%`);
+    const p = `%${escapeLike(project)}%`;
+    conditions.push(`(p.original_path LIKE ? ESCAPE '\\' OR p.encoded_name LIKE ? ESCAPE '\\')`);
+    params.push(p, p);
   }
   if (since) {
     conditions.push(`s.created_at >= ?`);
@@ -624,14 +630,15 @@ export function findProjectId(name: string): number | null {
   if (row) return row.id;
 
   // Try original_path match
+  const likePattern = `%${escapeLike(name)}%`;
   row = db
-    .prepare(`SELECT id FROM projects WHERE original_path LIKE ?`)
-    .get(`%${name}%`) as { id: number } | undefined;
+    .prepare(`SELECT id FROM projects WHERE original_path LIKE ? ESCAPE '\\'`)
+    .get(likePattern) as { id: number } | undefined;
   if (row) return row.id;
 
   // Try partial match on encoded_name
   row = db
-    .prepare(`SELECT id FROM projects WHERE encoded_name LIKE ?`)
-    .get(`%${name}%`) as { id: number } | undefined;
+    .prepare(`SELECT id FROM projects WHERE encoded_name LIKE ? ESCAPE '\\'`)
+    .get(likePattern) as { id: number } | undefined;
   return row?.id ?? null;
 }
