@@ -1,41 +1,5 @@
 import { z } from "zod";
 
-// ── Claude Code JSONL schemas ──
-
-/** Usage block from assistant messages */
-export const UsageSchema = z.object({
-  input_tokens: z.number().int().nonnegative().default(0),
-  output_tokens: z.number().int().nonnegative().default(0),
-  cache_creation_input_tokens: z.number().int().nonnegative().default(0),
-  cache_read_input_tokens: z.number().int().nonnegative().default(0),
-});
-
-export type Usage = z.infer<typeof UsageSchema>;
-
-/** Assistant message within a JSONL entry */
-export const AssistantMessageSchema = z.object({
-  model: z.string().optional(),
-  id: z.string().optional(),
-  type: z.literal("message").optional(),
-  role: z.literal("assistant").optional(),
-  stop_reason: z.string().nullable().optional(),
-  usage: UsageSchema.optional(),
-});
-
-/** A single JSONL line from a session file */
-export const JournalEntrySchema = z.object({
-  type: z.string(),
-  sessionId: z.string().optional(),
-  uuid: z.string().optional(),
-  parentUuid: z.string().nullable().optional(),
-  timestamp: z.string().optional(),
-  requestId: z.string().optional(),
-  isSidechain: z.boolean().optional(),
-  message: z.any().optional(),
-});
-
-export type JournalEntry = z.infer<typeof JournalEntrySchema>;
-
 /** Parsed API call extracted from JSONL */
 export interface ApiCall {
   requestId: string;

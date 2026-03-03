@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import { dbPath, localDateRange } from "./util.js";
+import { dbPath, localDateRange, todayDate } from "./util.js";
 import type {
   DbProject,
   DbSession,
@@ -425,11 +425,7 @@ export function queryTodayOverview(): {
   total_sessions: number;
 } {
   const db = getDb();
-  const today = new Date();
-  const y = today.getFullYear();
-  const m = String(today.getMonth() + 1).padStart(2, "0");
-  const d = String(today.getDate()).padStart(2, "0");
-  const { start, end } = localDateRange(`${y}-${m}-${d}`);
+  const { start, end } = localDateRange(todayDate());
 
   const row = db
     .prepare(

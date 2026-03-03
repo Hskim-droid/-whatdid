@@ -39,18 +39,17 @@ export async function syncAll(opts: SyncOptions = {}): Promise<SyncResult> {
 
   for (const project of projects) {
     const now = nowISO();
+    const sessions = discoverSessions(project.dirPath);
+
     // Try to extract the real path from the first session JSONL
     let originalPath = project.originalPath;
     if (!originalPath) {
-      const sessions = discoverSessions(project.dirPath);
       for (const s of sessions) {
         const cwd = extractCwdFromJSONL(s.jsonlPath);
         if (cwd) { originalPath = cwd; break; }
       }
     }
     const dbProject = upsertProject(project.encodedName, originalPath, now);
-
-    const sessions = discoverSessions(project.dirPath);
 
     for (const session of sessions) {
       sessionsScanned++;

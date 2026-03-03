@@ -12,7 +12,7 @@ import {
 import { formatCsv } from "../format/csv.js";
 import { formatJson } from "../format/json.js";
 import { formatHtml } from "../format/html.js";
-import { dataDir, formatTokens, formatTokensCompact, todayDate, weekStart } from "../util.js";
+import { dataDir, formatTokensCompact, todayDate, weekStart } from "../util.js";
 import type { ReportFormat, ReportRow } from "../types.js";
 
 function output(

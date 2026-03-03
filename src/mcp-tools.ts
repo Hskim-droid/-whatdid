@@ -8,7 +8,7 @@ import {
   getApiCallsForSession,
   searchSessions,
 } from "./db.js";
-import { duration, daysAgo, localDateRange } from "./util.js";
+import { duration, daysAgo, localDateRange, todayDate } from "./util.js";
 import { ensureSynced } from "./sync.js";
 
 /** Validate a YYYY-MM-DD date string. Returns null if valid, error message if not. */
@@ -29,7 +29,7 @@ export function registerTools(server: McpServer): void {
     async ({ date }) => {
       try {
         await ensureSynced();
-        const targetDate = date || new Date().toISOString().slice(0, 10);
+        const targetDate = date || todayDate();
         const dateErr = validateDate(targetDate);
         if (dateErr) return { content: [{ type: "text" as const, text: dateErr }], isError: true };
         const sessions = querySessionsForDate(targetDate);
@@ -244,11 +244,7 @@ export function registerPrompts(server: McpServer): void {
     "Morning work briefing — summarizes yesterday's work and suggests today's tasks.",
     { date: z.string().optional().describe("Yesterday's date (YYYY-MM-DD). Auto-calculated if omitted.") },
     ({ date }) => {
-      const yesterday = date || (() => {
-        const d = new Date();
-        d.setDate(d.getDate() - 1);
-        return d.toISOString().slice(0, 10);
-      })();
+      const yesterday = date || daysAgo(1);
 
       return {
         messages: [
@@ -278,7 +274,7 @@ get_work_activity로 최근 활동 패턴을 파악한 뒤,
     "Evening work review — summarizes today's work and suggests tasks for tomorrow.",
     { date: z.string().optional().describe("Today's date (YYYY-MM-DD). Auto-calculated if omitted.") },
     ({ date }) => {
-      const today = date || new Date().toISOString().slice(0, 10);
+      const today = date || todayDate();
 
       return {
         messages: [
