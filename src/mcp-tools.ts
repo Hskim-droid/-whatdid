@@ -136,15 +136,7 @@ export function registerTools(server: McpServer): void {
         await ensureSynced();
         const db = getDb();
 
-        // Try exact match first, then prefix match
-        let session = getSession(session_id);
-        if (!session) {
-          const row = db
-            .prepare(`SELECT * FROM sessions WHERE session_id LIKE ? LIMIT 1`)
-            .get(`${session_id}%`) as typeof session;
-          session = row;
-        }
-
+        const session = getSession(session_id);
         if (!session) {
           return { content: [{ type: "text", text: JSON.stringify({ error: `Session not found: ${session_id}` }) }], isError: true };
         }

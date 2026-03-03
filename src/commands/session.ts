@@ -1,12 +1,11 @@
 import { ensureSynced } from "../sync.js";
-import { getDb, getSession, getApiCallsForSession } from "../db.js";
+import { getSession, getApiCallsForSession } from "../db.js";
 import { fmtTime, formatTokens, duration } from "../util.js";
-import type { DbSession } from "../types.js";
 
 export async function showSession(sessionId: string): Promise<void> {
   await ensureSynced();
 
-  const session = findSession(sessionId);
+  const session = getSession(sessionId);
   if (!session) {
     console.log(`Session "${sessionId}" not found.`);
     return;
@@ -79,20 +78,4 @@ export async function showSession(sessionId: string): Promise<void> {
     const sub = c.is_subagent ? "Y" : "";
     console.log(`  ${num}  ${time}  ${model}  ${input}  ${output}  ${cacheC}  ${cacheR}  ${stop}  ${sub}`);
   }
-}
-
-function findSession(partialId: string): DbSession | null {
-  const db = getDb();
-
-  // Try exact match
-  let session = db
-    .prepare(`SELECT * FROM sessions WHERE session_id = ?`)
-    .get(partialId) as DbSession | undefined;
-  if (session) return session;
-
-  // Try prefix match
-  session = db
-    .prepare(`SELECT * FROM sessions WHERE session_id LIKE ?`)
-    .get(partialId + "%") as DbSession | undefined;
-  return session ?? null;
 }

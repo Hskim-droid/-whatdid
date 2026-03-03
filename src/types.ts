@@ -36,8 +36,6 @@ export const SessionsIndexSchema = z.object({
   entries: z.array(SessionIndexEntrySchema),
 });
 
-export type SessionsIndex = z.infer<typeof SessionsIndexSchema>;
-
 // ── DB row types ──
 
 export interface DbProject {
@@ -74,16 +72,6 @@ export interface DbApiCall {
   cache_read_input_tokens: number;
   stop_reason: string | null;
   is_subagent: number;
-}
-
-export interface DbSessionTotals {
-  session_id: string;
-  total_input: number;
-  total_output: number;
-  total_cache_creation: number;
-  total_cache_read: number;
-  total_api_calls: number;
-  models_used: string; // JSON array
 }
 
 export interface DbSyncState {

@@ -70,7 +70,7 @@ export function extractCwdFromJSONL(filePath: string): string | null {
 export function discoverSessions(projectDir: string): DiscoveredSession[] {
   // Read sessions-index.json if it exists
   const indexPath = path.join(projectDir, "sessions-index.json");
-  let indexEntries = new Map<string, SessionIndexEntry>();
+  const indexEntries = new Map<string, SessionIndexEntry>();
 
   if (fs.existsSync(indexPath)) {
     try {

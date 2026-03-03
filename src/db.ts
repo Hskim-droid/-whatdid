@@ -126,12 +126,6 @@ export function upsertProject(
     .get(encodedName) as DbProject;
 }
 
-export function getAllProjects(): DbProject[] {
-  return getDb()
-    .prepare(`SELECT * FROM projects ORDER BY last_seen_at DESC`)
-    .all() as DbProject[];
-}
-
 // ── Sessions ──
 
 export function upsertSession(
@@ -161,10 +155,16 @@ export function upsertSession(
     .run(sessionId, projectId, createdAt, modifiedAt, summary, firstPrompt, gitBranch, messageCount, isSidechain ? 1 : 0, jsonlPath);
 }
 
+/** Find a session by exact ID or prefix match. */
 export function getSession(sessionId: string): DbSession | undefined {
-  return getDb()
+  const db = getDb();
+  const exact = db
     .prepare(`SELECT * FROM sessions WHERE session_id = ?`)
     .get(sessionId) as DbSession | undefined;
+  if (exact) return exact;
+  return db
+    .prepare(`SELECT * FROM sessions WHERE session_id LIKE ? LIMIT 1`)
+    .get(`${sessionId}%`) as DbSession | undefined;
 }
 
 export function querySessions(

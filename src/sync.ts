@@ -1,7 +1,6 @@
 import fs from "node:fs";
 import { discoverProjects, discoverSessions, parseSessionJSONL, extractCwdFromJSONL, extractSessionMeta } from "./reader.js";
 import {
-  getDb,
   getSyncState,
   upsertSyncState,
   upsertProject,
