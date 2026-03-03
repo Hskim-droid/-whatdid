@@ -136,12 +136,12 @@ export function registerTools(server: McpServer): void {
         await ensureSynced();
         const db = getDb();
 
-        // Try exact match first, then partial
+        // Try exact match first, then prefix match
         let session = getSession(session_id);
         if (!session) {
           const row = db
             .prepare(`SELECT * FROM sessions WHERE session_id LIKE ? LIMIT 1`)
-            .get(`%${session_id}%`) as typeof session;
+            .get(`${session_id}%`) as typeof session;
           session = row;
         }
 

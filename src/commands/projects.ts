@@ -7,7 +7,7 @@ export async function listProjects(): Promise<void> {
 
   const projects = queryAllProjectsReport();
   if (projects.length === 0) {
-    console.log("No projects found. Run `qm-tracker sync` first.");
+    console.log("No projects found. Run `whatdid sync` first.");
     return;
   }
 

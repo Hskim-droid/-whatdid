@@ -12,7 +12,7 @@ import {
 import { formatCsv } from "../format/csv.js";
 import { formatJson } from "../format/json.js";
 import { formatHtml } from "../format/html.js";
-import { projectRoot, formatTokens, formatTokensCompact, todayDate, weekStart } from "../util.js";
+import { dataDir, formatTokens, formatTokensCompact, todayDate, weekStart } from "../util.js";
 import type { ReportFormat, ReportRow } from "../types.js";
 
 function output(
@@ -41,7 +41,7 @@ function output(
     writeFileSync(outputPath, content);
     console.log(`Report saved to ${outputPath}`);
   } else if (format === "html") {
-    const dir = join(projectRoot(), "data", "reports");
+    const dir = join(dataDir(), "reports");
     mkdirSync(dir, { recursive: true });
     const filename = `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}.html`;
     const filePath = join(dir, filename);
