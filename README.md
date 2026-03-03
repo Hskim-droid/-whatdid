@@ -1,5 +1,7 @@
 # whatdid
 
+[![Node.js >= 20](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org/) [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
 **Qualitative work tracker for Claude Code** — know *what* you did, not just how many tokens you used.
 
 whatdid parses the session JSONL files that Claude Code stores in `~/.claude/projects/`, indexes them into a local SQLite database, and exposes both a CLI and an MCP server for querying your work history.
@@ -61,6 +63,30 @@ whatdid sync --force
 
 Output formats: `table` (default), `csv`, `json`, `html`.
 
+### Example output
+
+```
+whatdid — Claude Code Usage Overview
+==========================================
+
+Today (2025-03-15):
+  Sessions:       3
+  API calls:      47
+  Input tokens:   1,245,800
+  Output tokens:  38,420
+  Cache created:  0
+  Cache read:     892,100
+  Total tokens:   2,176,320
+
+Projects (2):
+  my-app      12 sessions   4.2M tokens
+  whatdid       5 sessions   1.8M tokens
+
+Models:
+  claude-sonnet-4-20250514             39 calls   5.1M tokens
+  claude-haiku-4-20250506               8 calls   912K tokens
+```
+
 ## MCP Server
 
 whatdid ships an MCP server that lets Claude Code query your work history in conversation.
@@ -79,7 +105,8 @@ Add to `~/.claude/settings.json`:
 }
 ```
 
-Or, if you didn't run `npm link`, use the full path:
+<details>
+<summary>Didn't run <code>npm link</code>? Use the full path instead.</summary>
 
 ```json
 {
@@ -91,6 +118,8 @@ Or, if you didn't run `npm link`, use the full path:
   }
 }
 ```
+
+</details>
 
 Restart Claude Code. The following tools and prompts become available.
 
@@ -127,7 +156,7 @@ After setup, you can ask Claude Code things like:
 4. Extracts session metadata (first prompt, git branch, message count) directly from JSONL
 5. Auto-generates summaries from the first prompt when `sessions-index.json` doesn't provide one
 6. Stores everything in SQLite with incremental sync (only re-parses changed files)
-7. Subagent JSONL files are also parsed
+7. Parses subagent JSONL files alongside main sessions
 
 ## Data model
 
@@ -179,7 +208,11 @@ npx tsx src/cli.ts sessions
 npm run build
 
 # Test MCP server manually
-echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}' | node dist/mcp.js
+echo '{
+  "jsonrpc":"2.0","id":1,"method":"initialize",
+  "params":{"protocolVersion":"2024-11-05","capabilities":{},
+  "clientInfo":{"name":"test","version":"1.0.0"}}
+}' | node dist/mcp.js
 ```
 
 ## Dependencies
