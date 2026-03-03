@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import { dbPath } from "./util.js";
+import { dbPath, localDateRange } from "./util.js";
 import type {
   DbProject,
   DbSession,
@@ -288,9 +288,7 @@ export function recomputeSessionTotals(sessionId: string): void {
 
 export function queryDailyReport(date: string): ReportRow[] {
   const db = getDb();
-  const nextDay = new Date(date + "T00:00:00Z");
-  nextDay.setUTCDate(nextDay.getUTCDate() + 1);
-  const next = nextDay.toISOString().slice(0, 10);
+  const { start, end } = localDateRange(date);
 
   return db
     .prepare(
@@ -306,14 +304,12 @@ export function queryDailyReport(date: string): ReportRow[] {
        FROM api_calls a
        WHERE a.timestamp >= ? AND a.timestamp < ?`
     )
-    .all(date, date, next) as ReportRow[];
+    .all(date, start, end) as ReportRow[];
 }
 
 export function queryDailyBreakdown(date: string): ReportRow[] {
   const db = getDb();
-  const nextDay = new Date(date + "T00:00:00Z");
-  nextDay.setUTCDate(nextDay.getUTCDate() + 1);
-  const next = nextDay.toISOString().slice(0, 10);
+  const { start, end } = localDateRange(date);
 
   return db
     .prepare(
@@ -331,15 +327,16 @@ export function queryDailyBreakdown(date: string): ReportRow[] {
        GROUP BY a.model
        ORDER BY total_tokens DESC`
     )
-    .all(date, next) as ReportRow[];
+    .all(start, end) as ReportRow[];
 }
 
 export function queryWeeklyReport(weekStart: string): ReportRow[] {
   const db = getDb();
+  const { start } = localDateRange(weekStart);
   return db
     .prepare(
       `SELECT
-         substr(a.timestamp, 1, 10) as date,
+         date(a.timestamp, 'localtime') as date,
          COUNT(DISTINCT a.session_id) as session_count,
          COUNT(*) as api_calls,
          SUM(a.input_tokens) as input_tokens,
@@ -352,7 +349,7 @@ export function queryWeeklyReport(weekStart: string): ReportRow[] {
        GROUP BY date
        ORDER BY date ASC`
     )
-    .all(weekStart) as ReportRow[];
+    .all(start) as ReportRow[];
 }
 
 export function queryProjectReport(projectId: number): ReportRow[] {
@@ -428,10 +425,11 @@ export function queryTodayOverview(): {
   total_sessions: number;
 } {
   const db = getDb();
-  const today = new Date().toISOString().slice(0, 10);
-  const nextDay = new Date(today + "T00:00:00Z");
-  nextDay.setUTCDate(nextDay.getUTCDate() + 1);
-  const next = nextDay.toISOString().slice(0, 10);
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = String(today.getMonth() + 1).padStart(2, "0");
+  const d = String(today.getDate()).padStart(2, "0");
+  const { start, end } = localDateRange(`${y}-${m}-${d}`);
 
   const row = db
     .prepare(
@@ -445,7 +443,7 @@ export function queryTodayOverview(): {
        FROM api_calls a
        WHERE a.timestamp >= ? AND a.timestamp < ?`
     )
-    .get(today, next) as any;
+    .get(start, end) as any;
 
   return row;
 }
@@ -455,9 +453,7 @@ export function queryTodayOverview(): {
 /** Sessions active on a given date with project info and token totals. */
 export function querySessionsForDate(date: string) {
   const db = getDb();
-  const nextDay = new Date(date + "T00:00:00Z");
-  nextDay.setUTCDate(nextDay.getUTCDate() + 1);
-  const next = nextDay.toISOString().slice(0, 10);
+  const { start, end } = localDateRange(date);
 
   return db
     .prepare(
@@ -478,7 +474,7 @@ export function querySessionsForDate(date: string) {
        )
        ORDER BY s.created_at ASC`
     )
-    .all(date, next) as {
+    .all(start, end) as {
       session_id: string;
       summary: string | null;
       first_prompt: string | null;
@@ -500,7 +496,7 @@ export function queryActivitySummary(since: string) {
 
   const dailyActivity = db
     .prepare(
-      `SELECT substr(a.timestamp, 1, 10) as date,
+      `SELECT date(a.timestamp, 'localtime') as date,
               COUNT(DISTINCT a.session_id) as session_count,
               COUNT(*) as api_calls
        FROM api_calls a

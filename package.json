@@ -18,6 +18,9 @@
     "sqlite",
     "cli"
   ],
+  "files": [
+    "dist/"
+  ],
   "engines": {
     "node": ">=20"
   },

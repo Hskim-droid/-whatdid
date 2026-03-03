@@ -8,7 +8,7 @@ import {
   getApiCallsForSession,
   searchSessions,
 } from "./db.js";
-import { duration } from "./util.js";
+import { duration, daysAgo, localDateRange } from "./util.js";
 import { ensureSynced } from "./sync.js";
 
 /** Validate a YYYY-MM-DD date string. Returns null if valid, error message if not. */
@@ -97,11 +97,10 @@ export function registerTools(server: McpServer): void {
       try {
         await ensureSynced();
         const lookback = days || 7;
-        const since = new Date();
-        since.setDate(since.getDate() - lookback);
-        const sinceStr = since.toISOString().slice(0, 10);
+        const sinceStr = daysAgo(lookback);
+        const { start: sinceUtc } = localDateRange(sinceStr);
 
-        const activity = queryActivitySummary(sinceStr);
+        const activity = queryActivitySummary(sinceUtc);
 
         const result = {
           period: { since: sinceStr, days: lookback },

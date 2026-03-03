@@ -82,16 +82,39 @@ export function formatTokensCompact(n: number): string {
   return String(n);
 }
 
-/** Today's date as YYYY-MM-DD. */
-export function todayDate(): string {
-  return new Date().toISOString().slice(0, 10);
+/** Format a Date as local YYYY-MM-DD. */
+function fmtLocalDate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
-/** Get start of ISO week (Monday). */
+/** Today's date as YYYY-MM-DD in local timezone. */
+export function todayDate(): string {
+  return fmtLocalDate(new Date());
+}
+
+/** Get start of ISO week (Monday) in local timezone. */
 export function weekStart(): string {
   const now = new Date();
-  const dayOfWeek = now.getUTCDay();
+  const dayOfWeek = now.getDay();
   const monday = new Date(now);
-  monday.setUTCDate(now.getUTCDate() - ((dayOfWeek + 6) % 7));
-  return monday.toISOString().slice(0, 10);
+  monday.setDate(now.getDate() - ((dayOfWeek + 6) % 7));
+  return fmtLocalDate(monday);
+}
+
+/** Convert a YYYY-MM-DD local date to UTC ISO range [start, end). */
+export function localDateRange(date: string): { start: string; end: string } {
+  const start = new Date(date + "T00:00:00"); // local midnight
+  const end = new Date(date + "T00:00:00");
+  end.setDate(end.getDate() + 1);
+  return { start: start.toISOString(), end: end.toISOString() };
+}
+
+/** N days ago as local YYYY-MM-DD. */
+export function daysAgo(n: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return fmtLocalDate(d);
 }

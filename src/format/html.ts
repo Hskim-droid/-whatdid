@@ -1,5 +1,9 @@
 import type { ReportRow } from "../types.js";
 
+function esc(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
 function fmt(n: number): string {
   return n.toLocaleString("en-US");
 }
@@ -26,9 +30,9 @@ export function formatHtml(data: ReportRow[], title: string): string {
   const rows = data
     .map((r) => {
       const cells: string[] = [];
-      if (hasDate) cells.push(`<td>${r.date ?? "-"}</td>`);
-      if (hasProject) cells.push(`<td>${r.project ?? "-"}</td>`);
-      if (hasModel) cells.push(`<td>${r.model ?? "-"}</td>`);
+      if (hasDate) cells.push(`<td>${esc(r.date ?? "-")}</td>`);
+      if (hasProject) cells.push(`<td>${esc(r.project ?? "-")}</td>`);
+      if (hasModel) cells.push(`<td>${esc(r.model ?? "-")}</td>`);
       cells.push(
         `<td class="num">${r.session_count ?? 0}</td>`,
         `<td class="num">${fmt(r.api_calls)}</td>`,
@@ -46,7 +50,7 @@ export function formatHtml(data: ReportRow[], title: string): string {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>${title}</title>
+<title>${esc(title)}</title>
 <style>
   body { font-family: system-ui, sans-serif; margin: 2rem; background: #f5f5f5; }
   h1 { color: #333; }
@@ -60,7 +64,7 @@ export function formatHtml(data: ReportRow[], title: string): string {
 </style>
 </head>
 <body>
-<h1>${title}</h1>
+<h1>${esc(title)}</h1>
 <p class="meta">Generated: ${new Date().toISOString()}</p>
 ${
   data.length === 0
