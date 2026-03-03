@@ -24,7 +24,10 @@ git clone https://github.com/Hskim-droid/-whatdid.git whatdid
 cd whatdid
 npm install
 npm run build
+npm link
 ```
+
+This registers the `whatdid` and `whatdid-mcp` commands globally.
 
 Requires Node.js >= 20 and a C++ toolchain for [better-sqlite3](https://github.com/WiseLibs/better-sqlite3#requirements).
 
@@ -64,7 +67,19 @@ whatdid ships an MCP server that lets Claude Code query your work history in con
 
 ### Setup
 
-Add to `~/.claude/.mcp.json`:
+Add to `~/.claude/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "whatdid": {
+      "command": "whatdid-mcp"
+    }
+  }
+}
+```
+
+Or, if you didn't run `npm link`, use the full path:
 
 ```json
 {
