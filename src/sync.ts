@@ -76,16 +76,18 @@ export async function syncAll(opts: SyncOptions = {}): Promise<SyncResult> {
       let messageCount = idx?.messageCount ?? 0;
 
       // If index is missing key fields, extract directly from JSONL
+      let bestPrompt: string | null = null;
       if (!firstPrompt) {
         const meta = await extractSessionMeta(session.jsonlPath);
         firstPrompt = meta.firstPrompt;
+        bestPrompt = meta.bestPrompt;
         if (!gitBranch) gitBranch = meta.gitBranch;
         if (messageCount === 0) messageCount = meta.messageCount;
       }
 
-      // Auto-generate summary from first_prompt when not available
-      if (!summary && firstPrompt) {
-        summary = summarizePrompt(firstPrompt);
+      // Auto-generate summary: prefer bestPrompt (non-noise) over firstPrompt
+      if (!summary && (bestPrompt || firstPrompt)) {
+        summary = summarizePrompt(bestPrompt || firstPrompt!);
       }
 
       upsertSession(

@@ -113,6 +113,7 @@ export function discoverSessions(projectDir: string): DiscoveredSession[] {
 /** Metadata extracted directly from JSONL when sessions-index.json is unavailable. */
 export interface JsonlMeta {
   firstPrompt: string | null;
+  bestPrompt: string | null;
   gitBranch: string | null;
   messageCount: number;
 }
@@ -122,10 +123,14 @@ export interface JsonlMeta {
  * directly from a JSONL file. This is the fallback when sessions-index.json
  * doesn't cover a session.
  */
+/** Patterns that indicate a "meta" prompt with no real work context. */
+const NOISE_PATTERNS = /^(이전\s*작업|이전작업|컴퓨터가 작업하다|●|빌드\s*확인)/;
+
 export async function extractSessionMeta(filePath: string): Promise<JsonlMeta> {
   if (!fs.existsSync(filePath)) return { firstPrompt: null, gitBranch: null, messageCount: 0 };
 
   let firstPrompt: string | null = null;
+  let bestPrompt: string | null = null;
   let gitBranch: string | null = null;
   let messageCount = 0;
 
@@ -161,13 +166,20 @@ export async function extractSessionMeta(filePath: string): Promise<JsonlMeta> {
 
     messageCount++;
 
-    // Capture the first human prompt
+    const trimmed = content.trim().replace(/^[❯$>]\s*/, "");
+
+    // Always capture the first human prompt
     if (firstPrompt === null) {
       firstPrompt = content.length > 200 ? content.slice(0, 200) : content;
     }
+
+    // Track the first non-noise prompt with substance (>15 chars)
+    if (bestPrompt === null && trimmed.length > 15 && !NOISE_PATTERNS.test(trimmed)) {
+      bestPrompt = content.length > 200 ? content.slice(0, 200) : content;
+    }
   }
 
-  return { firstPrompt, gitBranch, messageCount };
+  return { firstPrompt, bestPrompt, gitBranch, messageCount };
 }
 
 /**

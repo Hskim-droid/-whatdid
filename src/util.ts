@@ -55,15 +55,18 @@ export function fmtTime(iso: string): string {
 /** Duration between two ISO timestamps as human-readable string. */
 export function duration(start: string, end: string): string {
   const ms = new Date(end).getTime() - new Date(start).getTime();
+  if (ms < 0) return "0s";
   const secs = Math.floor(ms / 1000);
-  const h = Math.floor(secs / 3600);
+  const d = Math.floor(secs / 86400);
+  const h = Math.floor((secs % 86400) / 3600);
   const m = Math.floor((secs % 3600) / 60);
   const s = secs % 60;
   const parts: string[] = [];
+  if (d > 0) parts.push(`${d}d`);
   if (h > 0) parts.push(`${h}h`);
-  if (m > 0) parts.push(`${m}m`);
-  parts.push(`${s}s`);
-  return parts.join(" ");
+  if (d === 0 && m > 0) parts.push(`${m}m`);
+  if (d === 0 && h === 0) parts.push(`${s}s`);
+  return parts.join(" ") || "0s";
 }
 
 /** Format a token count for display (e.g., 1234567 → "1,234,567"). */
