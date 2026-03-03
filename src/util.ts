@@ -112,9 +112,3 @@ export function localDateRange(date: string): { start: string; end: string } {
   return { start: start.toISOString(), end: end.toISOString() };
 }
 
-/** N days ago as local YYYY-MM-DD. */
-export function daysAgo(n: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() - n);
-  return fmtLocalDate(d);
-}

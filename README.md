@@ -4,7 +4,7 @@
 
 **Qualitative work tracker for Claude Code** — know *what* you did, not just how many tokens you used.
 
-whatdid parses the session JSONL files that Claude Code stores in `~/.claude/projects/`, indexes them into a local SQLite database, and exposes both a CLI and an MCP server for querying your work history.
+whatdid parses the session JSONL files that Claude Code stores in `~/.claude/projects/`, indexes them into a local SQLite database, and provides a CLI for querying your work history.
 
 ## How it differs from token counters
 
@@ -15,8 +15,6 @@ whatdid answers **"what did I do?"**:
 - Session summaries auto-generated from your prompts
 - Keyword search across all past sessions
 - Project/branch-aware activity patterns
-- "Morning briefing" and "evening review" MCP prompts
-
 It also pre-indexes everything in SQLite, so repeated queries are instant — no re-parsing JSONL files on every call.
 
 ## Install
@@ -29,7 +27,7 @@ npm run build
 npm link
 ```
 
-This registers the `whatdid` and `whatdid-mcp` commands globally.
+This registers the `whatdid` command globally.
 
 Requires Node.js >= 20 and a C++ toolchain for [better-sqlite3](https://github.com/WiseLibs/better-sqlite3#requirements).
 
@@ -87,67 +85,6 @@ Models:
   claude-haiku-4-20250506               8 calls   912K tokens
 ```
 
-## MCP Server
-
-whatdid ships an MCP server that lets Claude Code query your work history in conversation.
-
-### Setup
-
-Add to `~/.claude/settings.json`:
-
-```json
-{
-  "mcpServers": {
-    "whatdid": {
-      "command": "whatdid-mcp"
-    }
-  }
-}
-```
-
-<details>
-<summary>Didn't run <code>npm link</code>? Use the full path instead.</summary>
-
-```json
-{
-  "mcpServers": {
-    "whatdid": {
-      "command": "node",
-      "args": ["/absolute/path/to/whatdid/dist/mcp.js"]
-    }
-  }
-}
-```
-
-</details>
-
-Restart Claude Code. The following tools and prompts become available.
-
-### Tools
-
-| Tool | Description |
-|------|-------------|
-| `get_work_summary` | What you worked on for a given date — sessions grouped by project with summaries, branches, duration |
-| `get_work_activity` | Activity patterns over the last N days — daily trends, active projects/branches, recent sessions |
-| `get_session_detail` | Deep dive into a single session (supports partial ID matching) |
-| `search_sessions` | Keyword search across session summaries and first prompts, with project/date filters |
-
-### Prompts
-
-| Prompt | Description |
-|--------|-------------|
-| `morning_briefing` | Yesterday's recap + today's task suggestions |
-| `evening_briefing` | Today's recap + tomorrow's suggestions |
-
-### Example
-
-After setup, you can ask Claude Code things like:
-
-- "What did I work on yesterday?"
-- "Find all sessions related to ChatService"
-- "Give me a morning briefing"
-- "Show me recent activity on the whatdid project"
-
 ## How it works
 
 1. Scans `~/.claude/projects/` for project directories
@@ -177,8 +114,6 @@ Uses WAL mode for safe concurrent access.
 ```
 src/
 ├── cli.ts              # CLI entry point
-├── mcp.ts              # MCP server entry point
-├── mcp-tools.ts        # MCP tool/prompt definitions
 ├── db.ts               # SQLite schema + queries
 ├── reader.ts           # JSONL parsing + metadata extraction
 ├── sync.ts             # Incremental sync engine
@@ -206,20 +141,12 @@ npx tsx src/cli.ts sessions
 
 # Build
 npm run build
-
-# Test MCP server manually
-echo '{
-  "jsonrpc":"2.0","id":1,"method":"initialize",
-  "params":{"protocolVersion":"2024-11-05","capabilities":{},
-  "clientInfo":{"name":"test","version":"1.0.0"}}
-}' | node dist/mcp.js
 ```
 
 ## Dependencies
 
 - [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) — SQLite bindings
 - [zod](https://github.com/colinhacks/zod) — Runtime schema validation
-- [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/typescript-sdk) — MCP server framework
 
 ## License
 
