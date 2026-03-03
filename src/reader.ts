@@ -121,14 +121,14 @@ export interface JsonlMeta {
   messageCount: number;
 }
 
+/** Patterns that indicate a "meta" prompt with no real work context. */
+const NOISE_PATTERNS = /^(이전\s*작업|이전작업|컴퓨터가 작업하다|●|빌드\s*확인)/;
+
 /**
  * Extract session metadata (first_prompt, git_branch, message_count)
  * directly from a JSONL file. This is the fallback when sessions-index.json
  * doesn't cover a session.
  */
-/** Patterns that indicate a "meta" prompt with no real work context. */
-const NOISE_PATTERNS = /^(이전\s*작업|이전작업|컴퓨터가 작업하다|●|빌드\s*확인)/;
-
 export async function extractSessionMeta(filePath: string): Promise<JsonlMeta> {
   if (!fs.existsSync(filePath)) return { firstPrompt: null, bestPrompt: null, gitBranch: null, messageCount: 0 };
 

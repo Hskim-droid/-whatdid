@@ -285,27 +285,6 @@ export function recomputeSessionTotals(sessionId: string): void {
 
 // ── Report queries ──
 
-export function queryDailyReport(date: string): ReportRow[] {
-  const db = getDb();
-  const { start, end } = localDateRange(date);
-
-  return db
-    .prepare(
-      `SELECT
-         ? as date,
-         COUNT(DISTINCT a.session_id) as session_count,
-         COUNT(*) as api_calls,
-         SUM(a.input_tokens) as input_tokens,
-         SUM(a.output_tokens) as output_tokens,
-         SUM(a.cache_creation_input_tokens) as cache_creation,
-         SUM(a.cache_read_input_tokens) as cache_read,
-         SUM(a.input_tokens + a.output_tokens + a.cache_creation_input_tokens + a.cache_read_input_tokens) as total_tokens
-       FROM api_calls a
-       WHERE a.timestamp >= ? AND a.timestamp < ?`
-    )
-    .all(date, start, end) as ReportRow[];
-}
-
 export function queryDailyBreakdown(date: string): ReportRow[] {
   const db = getDb();
   const { start, end } = localDateRange(date);

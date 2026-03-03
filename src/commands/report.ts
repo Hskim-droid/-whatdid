@@ -2,7 +2,6 @@ import { writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { ensureSynced } from "../sync.js";
 import {
-  queryDailyReport,
   queryDailyBreakdown,
   queryWeeklyReport,
   queryProjectReport,
