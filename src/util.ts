@@ -9,11 +9,26 @@ export function projectRoot(): string {
   return path.resolve(path.dirname(thisFile), "..");
 }
 
-/** Ensure data/ directory exists and return path to tracker.db. */
-export function dbPath(): string {
-  const dir = path.join(projectRoot(), "data");
+/** Data directory at ~/.whatdid/ (stable across installs). */
+export function dataDir(): string {
+  const dir = path.join(os.homedir(), ".whatdid");
   fs.mkdirSync(dir, { recursive: true });
-  return path.join(dir, "tracker.db");
+  return dir;
+}
+
+/** Return path to tracker.db, migrating from old location if needed. */
+export function dbPath(): string {
+  const newPath = path.join(dataDir(), "tracker.db");
+
+  // Migrate from old project-local location
+  if (!fs.existsSync(newPath)) {
+    const oldPath = path.join(projectRoot(), "data", "tracker.db");
+    if (fs.existsSync(oldPath)) {
+      fs.copyFileSync(oldPath, newPath);
+    }
+  }
+
+  return newPath;
 }
 
 /** Claude Code data directory (~/.claude). */

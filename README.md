@@ -116,7 +116,7 @@ After setup, you can ask Claude Code things like:
 
 ## Data model
 
-5 tables in a local SQLite database (`data/tracker.db`, auto-created):
+5 tables in a local SQLite database (`~/.whatdid/tracker.db`, auto-created):
 
 | Table | Purpose |
 |-------|---------|
