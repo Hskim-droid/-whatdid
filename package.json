@@ -1,6 +1,6 @@
 {
   "name": "whatdid",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "Claude Code qualitative work tracker — know what you did, not just how many tokens you used",
   "type": "module",
   "license": "MIT",
